@@ -50,11 +50,6 @@ variable "aws_vpc" {
   type        = string
 }
 
-variable "aws_sg" {
-  description = "Security group for AWS Network"
-  type        = string
-}
-
 variable "aws_route_tables_ids" {
   description = "Routing table ID for AWS"
   type        = list(string)
