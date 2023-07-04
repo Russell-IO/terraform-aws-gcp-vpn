@@ -25,6 +25,11 @@ variable "tags" {
 }
 
 # bellow are specific modules variables
+variable "gcp_asn" {
+  description = "Google Cloud side ASN"
+  type        = number
+}
+
 variable "gcp_cidr" {
   description = "CIDR group for GCP network"
   type        = string
@@ -55,7 +60,13 @@ variable "aws_route_tables_ids" {
   type        = list(string)
 }
 
-variable "gcp_asn" {
-  description = "Google Cloud side ASN"
-  type        = number
+variable "aws_existing_vpn_gateway_id" {
+  description = "Optionally use an existeing VPN Gateway"
+  type        = string
+  default     = ""
+}
+
+locals {
+  vpn_gateway_count = var.aws_existing_vpn_gateway_id != "" ? 0 : 1
+  vpn_gateway_id    = var.aws_existing_vpn_gateway_id != "" ? var.aws_existing_vpn_gateway_id : aws_vpn_gateway.this[0].id
 }

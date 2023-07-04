@@ -14,20 +14,21 @@ resource "aws_customer_gateway" "customer_gateway2" {
   tags       = merge({ Name = var.name }, local.interpolated_tags)
 }
 
-resource "aws_vpn_gateway" "default" {
+resource "aws_vpn_gateway" "this" {
+  count  = local.vpn_gateway_count
   vpc_id = var.aws_vpc
   tags   = merge({ Name = var.name }, local.interpolated_tags)
 }
 
 resource "aws_vpn_connection" "vpn1" {
-  vpn_gateway_id      = aws_vpn_gateway.default.id
+  vpn_gateway_id      = local.vpn_gateway_id
   customer_gateway_id = aws_customer_gateway.customer_gateway1.id
   type                = aws_customer_gateway.customer_gateway1.type
   tags                = merge({ Name = var.name }, local.interpolated_tags)
 }
 
 resource "aws_vpn_connection" "vpn2" {
-  vpn_gateway_id      = aws_vpn_gateway.default.id
+  vpn_gateway_id      = local.vpn_gateway_id
   customer_gateway_id = aws_customer_gateway.customer_gateway2.id
   type                = aws_customer_gateway.customer_gateway2.type
   tags                = merge({ Name = var.name }, local.interpolated_tags)
@@ -36,6 +37,6 @@ resource "aws_vpn_connection" "vpn2" {
 resource "aws_route" "gcp" {
   count                  = length(var.aws_route_tables_ids)
   route_table_id         = var.aws_route_tables_ids[count.index]
-  gateway_id             = aws_vpn_gateway.default.id
+  gateway_id             = local.vpn_gateway_id
   destination_cidr_block = var.gcp_cidr
 }
